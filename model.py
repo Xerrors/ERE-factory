@@ -116,8 +116,8 @@ class RelModel(nn.Module):
             sub_h_t = self.fcn_sub(sub_h_t)
             obj_h_t = self.fcn_obj(obj_h_t)
 
-            sub_h = sub_h + self.layer(sub_h_t, h, masks)[0]
-            obj_h = obj_h + self.layer(obj_h_t, h, masks)[0]
+            sub_h = sub_h + self.layer(sub_h_t, obj_h_t, masks)[0]
+            obj_h = obj_h + self.layer(obj_h_t, sub_h_t, masks)[0]
 
 
         table = (table_logist).sigmoid() * mask_3d
