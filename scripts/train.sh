@@ -16,6 +16,7 @@ python -m main \
 --index ${token} \
 --device-id 1 \
 --use-feature-enchanced \
+# --set-table-calc biaffine \
 # --use-negative-mask \
 # --set-rel-level maxpooling \
 # --set-ent-level rel_maxpooling \
