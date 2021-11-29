@@ -139,8 +139,8 @@ class RelModel(nn.Module):
             subs = self.map_sub(sub_h).sigmoid()
             objs = self.map_obj(obj_h).sigmoid()
         elif self.args.set_ent_level == 'rel_maxpooling':
-            subs = table_logist.max(dim=2).values
-            objs = table_logist.max(dim=1).values
+            subs = table.max(dim=2).values
+            objs = table.max(dim=1).values
 
         ents = torch.cat([subs.unsqueeze(1), objs.unsqueeze(1)], dim=1)
         return table, cor, rels, ents

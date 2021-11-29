@@ -96,7 +96,10 @@ def _train_model(model, dataloader, optimizer, config):
         ent_loss = loss_func(ents, ent_tags)
         cor_loss = loss_func(cors, cor_tags)
         
-        loss = 10 * tab_loss + 0 * rel_loss + 0 * ent_loss  + 0 * cor_loss
+        loss = 10 * tab_loss \
+            + config.args.rel_loss * rel_loss \
+            + config.args.ent_loss * ent_loss \
+            + config.args.cor_loss * cor_loss
 
         loss.backward()
         optimizer.step()
