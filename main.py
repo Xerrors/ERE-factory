@@ -28,6 +28,7 @@ parser.add_argument('--set-ent-level', type=str, default='sent')
 parser.add_argument('--set-table-calc', type=str, default='mul', help="mul, biaffine")
 
 # loss weight
+parser.add_argument('--tab-loss', type=float, default=10.0)
 parser.add_argument('--rel-loss', type=float, default=0.0)
 parser.add_argument('--ent-loss', type=float, default=0.0)
 parser.add_argument('--cor-loss', type=float, default=0.0)

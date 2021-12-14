@@ -50,25 +50,29 @@ def train(model, config):
     for epoch in range(1, config.args.epoch_num+1):
         logging.info("Epoch {}/{}".format(epoch, config.args.epoch_num))
 
-        _train_model(model, train_data, optimizer, config)
+        loss, tab, rel, ent, cor = _train_model(model, train_data, optimizer, config)
+        logging.info("Training Avg Loss: {:.6f}, tab({:.6f})*{}, rel({:.6f})*{}, ent({:.6f})*{}, cor({:.6f})*{}".format(
+            loss, tab, config.args.tab_loss, 
+            rel, config.args.rel_loss, 
+            ent, config.args.ent_loss, 
+            cor, config.args.cor_loss))
 
-        f1, p, r, items = evaluate(model, val_data, config, eval_type='test')
-        # f1_test, p, r, items = evaluate(model, test_data, config, eval_type='test')
-        save_result_to_csv_and_json(items, config.log_dir, "training_val")
+        f1, p, r = evaluate(model, val_data, config, eval_type='val')
 
         if f1 > best_f1:
             best_f1 = f1
             early_stop = 0
-            logging.warning("Find new best F1 {:.4f}".format(best_f1))
+            logging.warning("Find new best F1 >>> ({:.4f})".format(best_f1))
         else:
             early_stop += 1
 
         if early_stop >= config.early_stop:
-            logging.warning("Early stoping in epoch {} and the best F1 is ({:.6f})".format(epoch, best_f1))
+            logging.warning("Early stoping in epoch {} and the best F1 is ({:.6f})!!!!".format(epoch, best_f1))
             break
 
-    logging.warning("Final evaluate in 'test set':")
+    logging.info("Final evaluate in 'test set':")
     f1, p, r, items = evaluate(model, test_data, config, eval_type='test')
+    logging.warning("\n\n\nFinal Result: \nVal Best F1 Score is ({:.6f}), Test F1 Score is ({:.6f})".format(best_f1, f1))
     save_result_to_csv_and_json(items, config.log_dir, "{}".format(int(f1*1e4)))
 
 
@@ -78,6 +82,10 @@ def _train_model(model, dataloader, optimizer, config):
     model.train()
 
     loss_avg = utils.RunningAverage()
+    tab_loss_avg = utils.RunningAverage()
+    rel_loss_avg = utils.RunningAverage()
+    ent_loss_avg = utils.RunningAverage()
+    cor_loss_avg = utils.RunningAverage()
     loss_func = nn.BCELoss(reduction='mean')
 
     t = trange(len(dataloader), ascii=True)
@@ -96,7 +104,7 @@ def _train_model(model, dataloader, optimizer, config):
         ent_loss = loss_func(ents, ent_tags)
         cor_loss = loss_func(cors, cor_tags)
         
-        loss = 10 * tab_loss \
+        loss = config.args.tab_loss * tab_loss \
             + config.args.rel_loss * rel_loss \
             + config.args.ent_loss * ent_loss \
             + config.args.cor_loss * cor_loss
@@ -106,8 +114,12 @@ def _train_model(model, dataloader, optimizer, config):
         model.zero_grad()
 
         loss_avg.update(loss.item())
+        tab_loss_avg.update(tab_loss.item())
+        rel_loss_avg.update(rel_loss.item())
+        ent_loss_avg.update(ent_loss.item())
+        cor_loss_avg.update(cor_loss.item())
         t.set_postfix(loss='{:.6f}/{:.6f}'.format(loss_avg(), loss.item()))
     
-    return loss_avg()
+    return loss_avg(), tab_loss_avg(), rel_loss_avg(), ent_loss_avg(), cor_loss_avg()
 
         
