@@ -23,8 +23,8 @@ parser.add_argument('--use-feature-enchanced', action='store_true')
 parser.add_argument('--use-negative-mask', action='store_true')
 
 # component args
-parser.add_argument('--set-rel-level', type=str, default='maxpooling')
-parser.add_argument('--set-ent-level', type=str, default='sent')
+parser.add_argument('--set-rel-level', type=str, default='maxpooling',  help="cls_map, avg_map, maxpooling")
+parser.add_argument('--set-ent-level', type=str, default='sent', help="sent, sent_enchanced, rel_maxpooling")
 parser.add_argument('--set-table-calc', type=str, default='mul', help="mul, biaffine")
 
 # loss weight

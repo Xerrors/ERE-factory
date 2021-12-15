@@ -17,22 +17,23 @@ def evaluate(model, dataloader, config, eval_type='val'):
     correct_num, pred_num, gold_num = 1e-10, 1e-10, 1e-10
 
     t = trange(len(dataloader), ascii=True)
-    for step, _ in enumerate(t):
-        batch = next(iter(dataloader))
+    with torch.no_grad():
+        for step, _ in enumerate(t):
+            batch = next(iter(dataloader))
 
-        ids, masks, triples, tokens, texts = batch
-        ids, masks = ids.to(config.device), masks.to(config.device)
+            ids, masks, triples, tokens, texts = batch
+            ids, masks = ids.to(config.device), masks.to(config.device)
 
-        outputs, cor_pred, rels_pred, ents_pred = model(ids, masks)
-        preds = [extract_triples(o, mask, rels) for o, mask, rels in zip(outputs, masks, rels_pred)]
+            outputs, cor_pred, rels_pred, ents_pred = model(ids, masks)
+            preds = [extract_triples(o, mask, rels) for o, mask, rels in zip(outputs, masks, rels_pred)]
 
-        for pred, gold in zip(preds, triples):
-            gold_num += len(gold)
-            pred_num += len(pred)
-            correct_num += len(set(pred) & set(gold))
-        
-        if eval_type == 'test':
-            items.extend(test_result(preds, triples, tokens, texts, config.idx2rel))
+            for pred, gold in zip(preds, triples):
+                gold_num += len(gold)
+                pred_num += len(pred)
+                correct_num += len(set(pred) & set(gold))
+            
+            if eval_type == 'test':
+                items.extend(test_result(preds, triples, tokens, texts, config.idx2rel))
 
     p = correct_num / pred_num
     r = correct_num / gold_num

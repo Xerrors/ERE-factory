@@ -74,9 +74,12 @@ class RelModel(nn.Module):
         self.fcn_sub = nn.Linear(config.rel_num, config.hidden_size)
         self.fcn_obj = nn.Linear(config.rel_num, config.hidden_size)
         self.map_cor = nn.Linear(config.rel_num, 1)
-        self.map_sub = nn.Linear(config.hidden_size, self.rel_num)
-        self.map_obj = nn.Linear(config.hidden_size, self.rel_num)
-        self.map_rel = nn.Linear(config.hidden_size, self.rel_num)
+
+        if 'sent' in self.args.set_ent_level:
+            self.map_sub = nn.Linear(config.hidden_size, self.rel_num)
+            self.map_obj = nn.Linear(config.hidden_size, self.rel_num)
+        if 'map' in self.args.set_rel_level:
+            self.map_rel = nn.Linear(config.hidden_size, self.rel_num)
 
         self.layer = DecoderLayer(config) # Global Feature Mining Module
 

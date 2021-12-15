@@ -11,14 +11,22 @@
 
 
 
+# token=`date "+%Y-%m-%d_%H-%M-%S"`-temp
+
+# python -m main \
+# --device-id 2 \
+# --use-feature-enchanced \
+# --index ${token} &
+
+# sleep 1
+
 token=`date "+%Y-%m-%d_%H-%M-%S"`-temp
 
 python -m main \
---device-id 1 \
+--device-id 2 \
 --use-feature-enchanced \
---set-rel-level maxpooling --rel-loss 0 \
---set-ent-level rel_maxpooling --ent-loss 0.1 \
---index ${token} \
+--set-ent-level sent_enchanced --ent-loss 1 \
+--index ${token} &
 
 wait
 
